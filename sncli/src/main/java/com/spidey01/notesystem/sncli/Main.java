@@ -2,7 +2,16 @@ package com.spidey01.notessystem.sncli;
 
 import com.spidey01.notessystem.terentatek.*;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Properties;
+
 class Main {
+
+    private static Properties mProperties;
 
     /** dispatches sncli {..} to Main.{...} */
     public static void main(String[] args) {
@@ -34,13 +43,44 @@ class Main {
         } else if (a.equals("untrash")) {
             untrash(key);
         } else if (a.equals("tag")) {
+        } else if (a.equals("login")) {
+            login(key);
         } else {
             System.out.println("Unrecognized command: " + a);
             help();
         }
     }
 
-    public static void help() {
+    static String getConfigurationFileName() {
+        String ps = System.getProperty("file.separator");
+        String root = System.getenv("XDG_DATA_HOME");
+
+        if (root == null) {
+            root = System.getProperty("user.home")
+                   + ps + ".local" + ps + "share";
+        }
+
+        return root + ps + "sncli.properties";
+    }
+
+    // static Preferences getPreferences() {
+        // return Preferences.userNodeForPackage(Main.class);
+    // }
+
+    static Properties getProperties() {
+        if (mProperties == null) {
+            mProperties = new Properties();
+            try {
+                mProperties.load(
+                        new FileInputStream(getConfigurationFileName()));
+            } catch (IOException e) {
+                System.err.println(e);
+            }
+        }
+        return mProperties;
+    }
+
+    static void help() {
         String m = "sncli {command} [options]\n\n" +
                    "    sncli {ls || list}\n" +
                    "    sncli read {note.key}\n" +
@@ -55,29 +95,62 @@ class Main {
         System.out.println(m);
     }
 
-    public static void list() {
-        System.out.println("list() called");
+    static void list() {
     }
 
-    public static void read(String key) {
-        assert key != null;
-        System.out.println("read(" + key + ") called");
-    }
-
-    public static void update(String key, String[] tags) {
+    static void read(String key) {
         assert key != null;
     }
 
-    public static void remove(String key) {
+    static void update(String key, String[] tags) {
         assert key != null;
     }
 
-    public static void trash(String key) {
+    static void remove(String key) {
         assert key != null;
     }
 
-    public static void untrash(String key) {
+    static void trash(String key) {
         assert key != null;
+    }
+
+    static void untrash(String key) {
+        assert key != null;
+    }
+    
+    static void login(String email) {
+        String password = null;
+        BufferedReader user = 
+            new BufferedReader(new InputStreamReader(System.in));
+
+        try { 
+            if (email == null) {
+                System.out.print("Enter Simplenote e-mail: ");
+                email = user.readLine();
+            }
+
+            System.out.print("Enter Simplenote password: ");
+            password = user.readLine();
+        } catch (IOException e) {
+            System.err.println(e);
+        }
+
+        Properties p = getProperties();
+        if (p == null) {
+            // TODO make ~/.local/share/sncli.properties
+            System.err.println("Can't find settings file, sorry mac");
+            System.exit(127);
+        }
+
+        p.setProperty("email", email);
+        p.setProperty("password", password);
+        try {
+            FileOutputStream config =
+                new FileOutputStream(getConfigurationFileName());
+            p.store(config, null);
+        } catch (Exception e) {
+            System.err.println(e);
+        }
     }
 
 }
