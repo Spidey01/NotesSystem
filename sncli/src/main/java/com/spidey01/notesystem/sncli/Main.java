@@ -100,6 +100,8 @@ class Main {
 
     static void read(String key) {
         assert key != null;
+
+        Note n = new Note(key);
     }
 
     static void update(String key, String[] tags) {
