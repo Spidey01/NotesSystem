@@ -6,12 +6,15 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.Properties;
 
 class Main {
 
     private static Properties mProperties;
+    private static SimpleNoteApi mSimpleNote;
 
     /** dispatches sncli {..} to Main.{...} */
     public static void main(String[] args) {
@@ -82,6 +85,7 @@ class Main {
 
     static void help() {
         String m = "sncli {command} [options]\n\n" +
+                   "    sncli login [email]\n" +
                    "    sncli {ls || list}\n" +
                    "    sncli read {note.key}\n" +
                    "    sncli update {note.key} [tags ...]\n" +
@@ -119,33 +123,66 @@ class Main {
     static void untrash(String key) {
         assert key != null;
     }
-    
-    static void login(String email) {
-        String password = null;
+
+    static String promptForLine(String prompt,
+                                InputStream in,
+                                PrintStream promptTo)
+        throws IOException
+    {
+        String result = null;
+
         BufferedReader user = 
-            new BufferedReader(new InputStreamReader(System.in));
+            new BufferedReader(new InputStreamReader(in));
 
-        try { 
-            if (email == null) {
-                System.out.print("Enter Simplenote e-mail: ");
-                email = user.readLine();
+        promptTo.print(prompt);
+        result = user.readLine();
+        
+        return result;
+    }
+
+    static String promptForLine(String prompt)
+        throws IOException
+    {
+        return promptForLine(prompt, System.in, System.out);
+    }
+
+    static boolean setPropertyInteractively(Properties p,
+                                           String key,
+                                           String prompt)
+    {
+            try {
+                p.setProperty(key, promptForLine(prompt));
+            } catch (IOException e) {
+                System.err.println(e);
+                p.setProperty(key, null);;
+                return false;
             }
-
-            System.out.print("Enter Simplenote password: ");
-            password = user.readLine();
-        } catch (IOException e) {
-            System.err.println(e);
-        }
+            return true;
+    }
+    
+    // TODO: error check setPropertyInteractively() calls.
+    static void login(String email) {
 
         Properties p = getProperties();
         if (p == null) {
-            // TODO make ~/.local/share/sncli.properties
+            // TODO try mkdir -p ~/.local/share/sncli.properties
             System.err.println("Can't find settings file, sorry mac");
             System.exit(127);
         }
 
-        p.setProperty("email", email);
-        p.setProperty("password", password);
+        if (email != null) {
+            p.setProperty("email", email);
+        }
+        if (!p.containsKey("email")) {
+            setPropertyInteractively(p, "email",
+                                     "Enter Simplenote e-mail: ");
+        }
+
+        if (!p.containsKey("password")) {
+            setPropertyInteractively(p, "password",
+                                     "Enter Simplenote password: ");
+        }
+
         try {
             FileOutputStream config =
                 new FileOutputStream(getConfigurationFileName());
@@ -153,6 +190,11 @@ class Main {
         } catch (Exception e) {
             System.err.println(e);
         }
+
+        System.out.println("email="+p.getProperty("email") +
+                           "password="+p.getProperty("password"));
+        mSimpleNote = new SimpleNote(p.getProperty("email"),
+                                     p.getProperty("password"));
     }
 
 }
