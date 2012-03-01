@@ -1,5 +1,7 @@
 # build files from maven
 sncli/target/*
 terentatek/target/*
+# files for distribution
+dist/*
 # Vim swap files
 *.sw?
