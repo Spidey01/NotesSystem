@@ -3,6 +3,7 @@ package com.spidey01.notessystem.sncli;
 import com.spidey01.notessystem.terentatek.*;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -48,6 +49,8 @@ class Main {
         } else if (a.equals("tag")) {
         } else if (a.equals("login")) {
             login(key);
+        } else if (a.equals("debug")) {
+            debug();
         } else {
             System.out.println("Unrecognized command: " + a);
             help();
@@ -73,9 +76,15 @@ class Main {
     static Properties getProperties() {
         if (mProperties == null) {
             mProperties = new Properties();
+            String n = getConfigurationFileName();
+
             try {
-                mProperties.load(
-                        new FileInputStream(getConfigurationFileName()));
+                // create file if !exists
+                File f = new File(n);
+                new File(f.getParent()).mkdirs();
+                f.createNewFile();
+
+                mProperties.load(new FileInputStream(n));
             } catch (IOException e) {
                 System.err.println(e);
             }
@@ -197,4 +206,7 @@ class Main {
                                      p.getProperty("password"));
     }
 
+    /* place to put code crap for debugging */
+    static void debug() {
+    }
 }
