@@ -86,7 +86,7 @@ class Main {
 
                 mProperties.load(new FileInputStream(n));
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println("IOException in Main.getProperties(): " + e.getMessage());
             }
         }
         return mProperties;
@@ -162,7 +162,7 @@ class Main {
             try {
                 p.setProperty(key, promptForLine(prompt));
             } catch (IOException e) {
-                System.err.println(e);
+                System.err.println("IOException in Main.setPropertyInteractively(): "+ e.getMessage());
                 p.setProperty(key, null);;
                 return false;
             }
@@ -197,11 +197,9 @@ class Main {
                 new FileOutputStream(getConfigurationFileName());
             p.store(config, null);
         } catch (Exception e) {
-            System.err.println(e);
+            System.err.println("Exception in Main.login() at FileOutputStream config: " + e.getMessage());
         }
 
-        System.out.println("email="+p.getProperty("email") +
-                           "password="+p.getProperty("password"));
         mSimpleNote = new SimpleNote(p.getProperty("email"),
                                      p.getProperty("password"));
     }
