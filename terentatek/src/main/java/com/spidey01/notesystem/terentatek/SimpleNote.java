@@ -54,5 +54,22 @@ public class SimpleNote
         return Base64.encodeBytes(what.getBytes());
     }
 
+    /** Makes a URL for a SimpleNote API call
+     *
+     * Note that for this to work, you must be logged in or a RuntimeException
+     * will result.
+     *
+     * @param what a snippet like "/index" or "/data/...."
+     * @return a URL suitable for the API call associated with what.
+     */
+    protected URL makeUrl(String what)
+        throws MalformedURLException
+    {
+        if (!mIsLoggedIn) {
+            throw new RuntimeException("Must be logged in to SimpleNote.makeUrl!");
+        }
+
+        return new URL(mApi2Url+what+"?email="+mEmail+"&auth="+mToken);
+    }
 }
 
