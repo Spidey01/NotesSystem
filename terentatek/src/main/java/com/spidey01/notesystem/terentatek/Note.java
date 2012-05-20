@@ -1,7 +1,5 @@
 package com.spidey01.notessystem.terentatek;
 
-import com.google.gson.Gson;
-
 import java.util.Date;
 import java.util.Collection;
 
@@ -13,12 +11,10 @@ import java.util.Collection;
  */
 public class Note {
 
-    private static Gson sGson;
-
     public final String key;
     public int deleted;
-    public /*Date*/double modifydate;
-    public /*Date*/double createddate;
+    public Date modifydate;
+    public Date createddate;
     /** read only. */
     public long syncnum;
     /** read only. */
@@ -39,21 +35,12 @@ public class Note {
     }
 
     public static Note fromJson(String json) {
-        return getGson().fromJson(json, Note.class);
+        return Utils.getGson().fromJson(json, Note.class);
     }
     
     public static String toJson(Note note) {
-        return getGson().toJson(note);
+        return Utils.getGson().toJson(note);
     }
-
-    private static Gson getGson() {
-        if (sGson == null) {
-            sGson = new Gson();
-        }
-
-        return sGson;
-    }
-
 
 }
 

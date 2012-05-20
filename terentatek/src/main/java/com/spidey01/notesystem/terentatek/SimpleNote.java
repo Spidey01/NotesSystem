@@ -1,8 +1,5 @@
 package com.spidey01.notessystem.terentatek;
 
-import com.google.gson.Gson;
-import net.iharder.Base64;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -39,7 +36,7 @@ public class SimpleNote
     public boolean login(String email, String password) {
         try {
             URL url = new URL(mBaseUrl+"/api/login");
-            mToken = HttpClient.post(url, base64("email="+mEmail + "&password="+mPassword));
+            mToken = HttpClient.post(url, Utils.base64("email="+mEmail + "&password="+mPassword));
         } catch(MalformedURLException e) {
             // TODO: better handling of this.
             System.err.println("MalformedUrlException in Simplenote.Simplenote(): " + e.getMessage());
@@ -66,7 +63,6 @@ public class SimpleNote
             URL url = makeUrl("/index?length="+length);
             json = HttpClient.get(url);
         } catch(MalformedURLException e) {
-            // TODO: better handling of this.
             System.err.println("MalformedUrlException in Simplenote.index(): " + e.getMessage());
         } catch(IOException e) {
             System.err.println("IOException in Simplenote.index(): " + e.getMessage());
@@ -74,17 +70,13 @@ public class SimpleNote
 
         if (json != null) {
             System.err.println("Making NoteIndex");
-            Gson gson = new Gson();
-            NoteIndex p = gson.fromJson(json,NoteIndex.class);
+            NoteIndex p = Utils.getGson().fromJson(json,NoteIndex.class);
 
             System.err.println("p.data[0].key = \"" + p.data[0].key + "\"");
+            System.err.println("p.time.toString() = " + p.time.toString());
         } else {
             System.err.println("String json == null :-(;");
         }
-    }
-
-    protected String base64(String what) {
-        return Base64.encodeBytes(what.getBytes());
     }
 
     /** Makes a URL for a SimpleNote API call
@@ -127,7 +119,7 @@ public class SimpleNote
         */
         public long count;
         public Note[] data;
-        public /*Date*/double time;
+        public Date time;
         public String mark;
     }
 }
