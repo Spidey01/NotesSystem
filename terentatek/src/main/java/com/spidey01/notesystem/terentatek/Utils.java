@@ -2,6 +2,7 @@ package com.spidey01.notessystem.terentatek;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import net.iharder.Base64;
 
 import java.util.Date;
 
@@ -18,6 +19,10 @@ final class Utils {
         }
 
         return sGson;
+    }
+
+    static String base64(String what) {
+        return Base64.encodeBytes(what.getBytes());
     }
 }
 
