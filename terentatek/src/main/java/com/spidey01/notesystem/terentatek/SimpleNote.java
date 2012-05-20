@@ -1,10 +1,12 @@
 package com.spidey01.notessystem.terentatek;
 
+import com.google.gson.Gson;
+import net.iharder.Base64;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-
-import net.iharder.Base64;
+import java.util.Date;
 
 /** Simple access to the SimpleNote API.
  */
@@ -27,6 +29,10 @@ public class SimpleNote
         mPassword = password;
 
         login(mEmail, mPassword);
+
+        try {
+        System.err.println("Get of index: " + HttpClient.get(makeUrl("/index?length=1")));
+        } catch(Exception e) { System.err.println("WTF: "+e.getMessage()); }
     }
 
     /** Logs into SimpleNote and makes the API available */
@@ -50,6 +56,33 @@ public class SimpleNote
         return mIsLoggedIn;
     }
 
+    public void index(int length)
+    {
+        if (!mIsLoggedIn) System.err.println("Test it");
+
+        System.err.println("Doing get");
+        String json = "";
+        try {
+            URL url = makeUrl("/index?length="+length);
+            json = HttpClient.get(url);
+        } catch(MalformedURLException e) {
+            // TODO: better handling of this.
+            System.err.println("MalformedUrlException in Simplenote.index(): " + e.getMessage());
+        } catch(IOException e) {
+            System.err.println("IOException in Simplenote.index(): " + e.getMessage());
+        }
+
+        if (json != null) {
+            System.err.println("Making NoteIndex");
+            Gson gson = new Gson();
+            NoteIndex p = gson.fromJson(json,NoteIndex.class);
+
+            System.err.println("p.data[0].key = \"" + p.data[0].key + "\"");
+        } else {
+            System.err.println("String json == null :-(;");
+        }
+    }
+
     protected String base64(String what) {
         return Base64.encodeBytes(what.getBytes());
     }
@@ -69,7 +102,33 @@ public class SimpleNote
             throw new RuntimeException("Must be logged in to SimpleNote.makeUrl!");
         }
 
-        return new URL(mApi2Url+what+"?email="+mEmail+"&auth="+mToken);
+        return new URL(mApi2Url+what+"&email="+mEmail+"&auth="+mToken);
+    }
+
+    class NoteIndex {
+        /* Get of index (pretty printed/edited): {
+            "count":1,
+            "data":[
+                {
+                    "modifydate": "1336661715.656000",
+                    "tags": ["Android", "Backups"],
+                    "deleted": 0,
+                    "createdate": "1324770139.417514",
+                    "systemtags": ["pinned", "markdown"],
+                    "version": 19,
+                    "syncnum": 12,
+                    "key": "short hashed string",
+                    "minversion": 9
+                }
+            ],
+            "time":"1337545449.688046",
+            "mark":"long hashed string"
+           }
+        */
+        public long count;
+        public Note[] data;
+        public /*Date*/double time;
+        public String mark;
     }
 }
 

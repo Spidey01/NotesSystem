@@ -17,8 +17,8 @@ public class Note {
 
     public final String key;
     public int deleted;
-    public Date modifydate;
-    public Date createddate;
+    public /*Date*/double modifydate;
+    public /*Date*/double createddate;
     /** read only. */
     public long syncnum;
     /** read only. */
