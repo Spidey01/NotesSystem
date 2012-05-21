@@ -174,7 +174,6 @@ class Main {
 
         Properties p = getProperties();
         if (p == null) {
-            // TODO try mkdir -p ~/.local/share/sncli.properties
             System.err.println("Can't find settings file, sorry mac");
             System.exit(127);
         }
@@ -206,5 +205,7 @@ class Main {
 
     /* place to put code crap for debugging */
     static void debug() {
+        Main.login("BigBoss1964@gmail.com");
+        mSimpleNote.index(1);
     }
 }

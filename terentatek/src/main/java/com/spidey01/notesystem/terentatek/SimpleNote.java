@@ -22,18 +22,19 @@ public class SimpleNote
     }
 
     public SimpleNote(String email, String password) {
-        mEmail = email;
-        mPassword = password;
-
-        login(mEmail, mPassword);
-
-        try {
-        System.err.println("Get of index: " + HttpClient.get(makeUrl("/index?length=1")));
-        } catch(Exception e) { System.err.println("WTF: "+e.getMessage()); }
+        if (!login(email, password)) {
+            throw new RuntimeException("Unable to login as \""+email+"\"");
+        }
     }
 
     /** Logs into SimpleNote and makes the API available */
     public boolean login(String email, String password) {
+        mEmail = email;
+        mPassword = password;
+        return login();
+    }
+
+    public boolean login() {
         try {
             URL url = new URL(mBaseUrl+"/api/login");
             mToken = HttpClient.post(url, Utils.base64("email="+mEmail + "&password="+mPassword));
