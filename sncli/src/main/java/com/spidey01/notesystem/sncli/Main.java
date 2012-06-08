@@ -206,6 +206,11 @@ class Main {
     /* place to put code crap for debugging */
     static void debug() {
         Main.login("BigBoss1964@gmail.com");
-        mSimpleNote.index(1);
+        // for (Note n : mSimpleNote.list()) {
+        Note[] nl = mSimpleNote.list();
+        for (Note n : nl) {
+            System.out.println(n.key+"\t"+n.version+"\t"+n.modifydate);
+        }
+        System.out.println(nl[0].content);
     }
 }

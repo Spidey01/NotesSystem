@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Arrays;
 
 /** Simple access to the SimpleNote API.
  */
@@ -40,9 +44,9 @@ public class SimpleNote
             mToken = HttpClient.post(url, Utils.base64("email="+mEmail + "&password="+mPassword));
         } catch(MalformedURLException e) {
             // TODO: better handling of this.
-            System.err.println("MalformedUrlException in Simplenote.Simplenote(): " + e.getMessage());
+            System.err.println("MalformedUrlException in SimpleNote.login(): " + e.getMessage());
         } catch(IOException e) {
-            System.err.println("IOException in Simplenote.Simplenote(): " + e.getMessage());
+            System.err.println("IOException in SimpleNote.login(): " + e.getMessage());
         }
 
         if (mToken == null || mToken.isEmpty()) {
@@ -54,30 +58,81 @@ public class SimpleNote
         return mIsLoggedIn;
     }
 
-    public void index(int length)
+    // Date to time_t -> d.getTime();
+
+    public NoteIndex index(int length, Mark mark, Date since)
+    {
+        return doIndex("/index?length="+length+"&mark="+mark+"&since="+since.getTime());
+    }
+
+    public NoteIndex index(int length, Mark mark)
+    {
+        return doIndex("/index?length="+length+"&mark="+mark);
+    }
+
+    public NoteIndex index(int length)
     {
         if (!mIsLoggedIn) System.err.println("Test it");
 
-        System.err.println("Doing get");
+        return doIndex("/index?length="+length);
+    }
+
+    public Note[] list()
+    {
+        List<Note> nl = new ArrayList<Note>(128);
+
+        NoteIndex ni = index(100);
+        nl.addAll(Arrays.asList(ni.data));
+
+        while (ni.mark != null) {
+            ni = index(100, ni.mark);
+            nl.addAll(Arrays.asList(ni.data));
+        }
+
+        /* less repetitive typing at the cost of a temp' object
+        NoteIndex ni = new NoteIndex();
+        do {
+            ni = index(100, ni.mark);
+            nl.addAll(Arrays.asList(ni.data));
+        } while (ni.mark != null);
+        */
+
+        return nl.toArray(new Note[0]);
+    }
+
+    /** Do the index call for url
+     *
+     * @param url String to pass to makeUrl
+     */
+    protected NoteIndex doIndex(String url)
+    {
+        return Utils.getGson().fromJson(doGet(url), NoteIndex.class);
+    }
+
+    /*
+     * N.b. if you need ?email=...&auth=... instead of what makeUrl() gives.
+     * Then this method is for you!
+     */
+    protected String doGet(String url)
+    {
+        try {
+            return doGet(makeUrl(url));
+        } catch(MalformedURLException e) {
+            System.err.println("MalformedUrlException in SimpleNote.doGet(): " + e.getMessage());
+            throw new Error("Invalid URL used within Simplenote");
+        }
+    }
+
+    protected String doGet(URL url)
+    {
         String json = "";
         try {
-            URL url = makeUrl("/index?length="+length);
             json = HttpClient.get(url);
-        } catch(MalformedURLException e) {
-            System.err.println("MalformedUrlException in Simplenote.index(): " + e.getMessage());
         } catch(IOException e) {
-            System.err.println("IOException in Simplenote.index(): " + e.getMessage());
+            System.err.println("IOException in SimpleNote.doGet(): " + e.getMessage());
         }
 
-        if (json != null) {
-            System.err.println("Making NoteIndex");
-            NoteIndex p = Utils.getGson().fromJson(json,NoteIndex.class);
-
-            System.err.println("p.data[0].key = \"" + p.data[0].key + "\"");
-            System.err.println("p.time.toString() = " + p.time.toString());
-        } else {
-            System.err.println("String json == null :-(;");
-        }
+        return json;
     }
 
     /** Makes a URL for a SimpleNote API call
@@ -92,36 +147,11 @@ public class SimpleNote
         throws MalformedURLException
     {
         if (!mIsLoggedIn) {
-            throw new RuntimeException("Must be logged in to SimpleNote.makeUrl!");
+            throw new RuntimeException("Must be logged in before SimpleNote.makeUrl!");
         }
 
         return new URL(mApi2Url+what+"&email="+mEmail+"&auth="+mToken);
     }
 
-    class NoteIndex {
-        /* Get of index (pretty printed/edited): {
-            "count":1,
-            "data":[
-                {
-                    "modifydate": "1336661715.656000",
-                    "tags": ["Android", "Backups"],
-                    "deleted": 0,
-                    "createdate": "1324770139.417514",
-                    "systemtags": ["pinned", "markdown"],
-                    "version": 19,
-                    "syncnum": 12,
-                    "key": "short hashed string",
-                    "minversion": 9
-                }
-            ],
-            "time":"1337545449.688046",
-            "mark":"long hashed string"
-           }
-        */
-        public long count;
-        public Note[] data;
-        public Date time;
-        public String mark;
-    }
 }
 
