@@ -37,4 +37,7 @@ test:
 compile:
 	$(MVN) compile
 
-.PHONY: package dist run run-package clean test
+tags:
+	find . -name \*.java |xargs ctags
+
+.PHONY: package dist run run-package clean test compile tags
