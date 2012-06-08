@@ -15,6 +15,8 @@ final class Utils {
             GsonBuilder b = new GsonBuilder();
             // Override GSon's internal DateTypeAdapter
             b.registerTypeAdapter(Date.class, new DateAdapter());
+            // Our custom Mark type
+            b.registerTypeAdapter(Mark.class, new MarkAdapter());
             sGson = b.create();
         }
 
