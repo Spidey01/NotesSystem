@@ -19,8 +19,8 @@ public class DateAdapter extends TypeAdapter<Date>
             return null;
         }
 
-        /* get the data and make a Date */
-        return new Date((long)reader.nextDouble());
+        /* get the data in seconds and make a Date via miliseconds */
+        return new Date(((long)reader.nextDouble())*1000);
     }
 
     public void write(JsonWriter writer, Date value)
@@ -30,11 +30,8 @@ public class DateAdapter extends TypeAdapter<Date>
             writer.nullValue();
             return;
         }
-        /* do writer.value(...) with data from the Date value */
+        /* do writer.value(...) with data from the Date value as seconds */
         writer.value(value.getTime()/1000);
     }
 }
-
-        // convert ms to s and I assume, we have to try for division error?
-        // return new JsonPrimitive(src.getTime()/1000);
 
