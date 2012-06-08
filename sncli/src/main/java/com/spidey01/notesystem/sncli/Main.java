@@ -15,7 +15,7 @@ import java.util.Properties;
 class Main {
 
     private static Properties mProperties;
-    private static SimpleNoteApi mSimpleNote;
+    private static SimplenoteApi mSimplenote;
 
     /** dispatches sncli {..} to Main.{...} */
     public static void main(String[] args) {
@@ -109,12 +109,20 @@ class Main {
     }
 
     static void list() {
+        Main.login("BigBoss1964@gmail.com");
+        // for (Note n : mSimplenote.list()) {
+        // Note[] nl = mSimplenote.list();
+        NoteMetaData[] nl = mSimplenote.list();
+        // for (Note n : nl) {
+        for (NoteMetaData n : nl) {
+            System.out.println(n.key+"\t"+n.version+"\t"+n.modifydate);
+        }
     }
 
     static void read(String key) {
         assert key != null;
 
-        Note n = new Note(key);
+        // Note n = new Note(key);
     }
 
     static void update(String key, String[] tags) {
@@ -199,18 +207,20 @@ class Main {
             System.err.println("Exception in Main.login() at FileOutputStream config: " + e.getMessage());
         }
 
-        mSimpleNote = new SimpleNote(p.getProperty("email"),
+        mSimplenote = new Simplenote(p.getProperty("email"),
                                      p.getProperty("password"));
     }
 
     /* place to put code crap for debugging */
     static void debug() {
         Main.login("BigBoss1964@gmail.com");
-        // for (Note n : mSimpleNote.list()) {
-        Note[] nl = mSimpleNote.list();
-        for (Note n : nl) {
-            System.out.println(n.key+"\t"+n.version+"\t"+n.modifydate);
+
+        // NoteMetaData[] nl = mSimplenote.list();
+        NoteMetaData[] nl = mSimplenote.index(5).data;
+
+        for (NoteMetaData n : nl) {
+            Note note = mSimplenote.note(n);
+            System.out.println(note.content.substring(0, 16));
         }
-        System.out.println(nl[0].content);
     }
 }
