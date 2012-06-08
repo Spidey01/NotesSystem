@@ -2,7 +2,10 @@
 #
 
 MVN = mvn $(mvnflags)
-mvnflags = 
+skiptests ?= false
+# mvnflags = 
+mvnflags = -Dmaven.test.skip=$(skiptests) -q
+ARGS=debug
 
 all: run-package
 
@@ -30,5 +33,8 @@ clean:
 
 test:
 	$(MVN) test
+
+compile:
+	$(MVN) compile
 
 .PHONY: package dist run run-package clean test
