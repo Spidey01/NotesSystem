@@ -2,11 +2,11 @@ package com.spidey01.notessystem.terentatek;
 
 import java.util.Date;
 
-/** Simple interface to the SimpleNote API.
+/** Simple interface to the Simplenote API.
  */
-public interface SimpleNoteApi {
+public interface SimplenoteApi {
 
-    /** SimpleNote API version implemented */
+    /** Simplenote API version implemented */
     public static final String version = "2.1.4";
 
     public boolean login(String email, String password);

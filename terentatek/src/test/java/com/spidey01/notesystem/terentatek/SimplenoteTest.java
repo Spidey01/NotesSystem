@@ -2,13 +2,13 @@ package com.spidey01.notessystem.terentatek;
 
 import org.junit.*;
 
-public final class SimpleNoteTest {
+public final class SimplenoteTest {
 
-    private SimpleNoteApi mApi;
+    private SimplenoteApi mApi;
 
     @Before
     public void setup() {
-        mApi = new SimpleNote("Foo@bar.bork", "1234");
+        mApi = new Simplenote("Foo@bar.bork", "1234");
     }
 
     @Test

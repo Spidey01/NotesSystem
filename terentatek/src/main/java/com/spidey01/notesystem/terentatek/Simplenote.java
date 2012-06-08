@@ -9,10 +9,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Arrays;
 
-/** Simple access to the SimpleNote API.
+/** Simple access to the Simplenote API.
  */
-public class SimpleNote
-    implements SimpleNoteApi
+public class Simplenote
+    implements SimplenoteApi
 {
 
     private String mEmail;
@@ -22,16 +22,16 @@ public class SimpleNote
     private static String mApi2Url = mBaseUrl + "/api2";
     private boolean mIsLoggedIn = false;
 
-    public SimpleNote() {
+    public Simplenote() {
     }
 
-    public SimpleNote(String email, String password) {
+    public Simplenote(String email, String password) {
         if (!login(email, password)) {
             throw new RuntimeException("Unable to login as \""+email+"\"");
         }
     }
 
-    /** Logs into SimpleNote and makes the API available */
+    /** Logs into Simplenote and makes the API available */
     public boolean login(String email, String password) {
         mEmail = email;
         mPassword = password;
@@ -44,9 +44,9 @@ public class SimpleNote
             mToken = HttpClient.post(url, Utils.base64("email="+mEmail + "&password="+mPassword));
         } catch(MalformedURLException e) {
             // TODO: better handling of this.
-            System.err.println("MalformedUrlException in SimpleNote.login(): " + e.getMessage());
+            System.err.println("MalformedUrlException in Simplenote.login(): " + e.getMessage());
         } catch(IOException e) {
-            System.err.println("IOException in SimpleNote.login(): " + e.getMessage());
+            System.err.println("IOException in Simplenote.login(): " + e.getMessage());
         }
 
         if (mToken == null || mToken.isEmpty()) {
@@ -89,7 +89,7 @@ public class SimpleNote
            URL url = new URL(mApi2Url+"/data/"+key+"?email="+mEmail+"&auth="+mToken);
            return Utils.getGson().fromJson(doGet(url), Note.class);
         } catch(MalformedURLException e) {
-            System.err.println("MalformedUrlException in SimpleNote.note(): " + e.getMessage());
+            System.err.println("MalformedUrlException in Simplenote.note(): " + e.getMessage());
             throw new Error("Invalid URL used within terentatek");
         }
 
@@ -137,7 +137,7 @@ public class SimpleNote
         try {
             return doGet(makeUrl(url));
         } catch(MalformedURLException e) {
-            System.err.println("MalformedUrlException in SimpleNote.doGet(): " + e.getMessage());
+            System.err.println("MalformedUrlException in Simplenote.doGet(): " + e.getMessage());
             throw new Error("Invalid URL used within terentatek");
         }
     }
@@ -148,13 +148,13 @@ public class SimpleNote
         try {
             json = HttpClient.get(url);
         } catch(IOException e) {
-            System.err.println("IOException in SimpleNote.doGet(): " + e.getMessage());
+            System.err.println("IOException in Simplenote.doGet(): " + e.getMessage());
         }
 
         return json;
     }
 
-    /** Makes a URL for a SimpleNote API call
+    /** Makes a URL for a Simplenote API call
      *
      * Note that for this to work, you must be logged in or a RuntimeException
      * will result.
@@ -166,7 +166,7 @@ public class SimpleNote
         throws MalformedURLException
     {
         if (!mIsLoggedIn) {
-            throw new RuntimeException("Must be logged in before SimpleNote.makeUrl!");
+            throw new RuntimeException("Must be logged in before Simplenote.makeUrl!");
         }
 
         return new URL(mApi2Url+what+"&email="+mEmail+"&auth="+mToken);
