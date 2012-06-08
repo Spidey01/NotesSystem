@@ -77,9 +77,28 @@ public class SimpleNote
         return doIndex("/index?length="+length);
     }
 
-    public Note[] list()
+    public Note note(NoteMetaData meta)
     {
-        List<Note> nl = new ArrayList<Note>(128);
+        return note(meta.key);
+    }
+
+    public Note note(String key)
+    {
+        
+        try {
+           URL url = new URL(mApi2Url+"/data/"+key+"?email="+mEmail+"&auth="+mToken);
+           return Utils.getGson().fromJson(doGet(url), Note.class);
+        } catch(MalformedURLException e) {
+            System.err.println("MalformedUrlException in SimpleNote.note(): " + e.getMessage());
+            throw new Error("Invalid URL used within terentatek");
+        }
+
+       // String url = " /data/"+key;
+    }
+
+    public NoteMetaData[] list()
+    {
+        List<NoteMetaData> nl = new ArrayList<NoteMetaData>(128);
 
         NoteIndex ni = index(100);
         nl.addAll(Arrays.asList(ni.data));
@@ -97,7 +116,7 @@ public class SimpleNote
         } while (ni.mark != null);
         */
 
-        return nl.toArray(new Note[0]);
+        return nl.toArray(new NoteMetaData[0]);
     }
 
     /** Do the index call for url
@@ -119,7 +138,7 @@ public class SimpleNote
             return doGet(makeUrl(url));
         } catch(MalformedURLException e) {
             System.err.println("MalformedUrlException in SimpleNote.doGet(): " + e.getMessage());
-            throw new Error("Invalid URL used within Simplenote");
+            throw new Error("Invalid URL used within terentatek");
         }
     }
 

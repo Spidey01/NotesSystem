@@ -24,7 +24,7 @@ public class NoteIndex {
     */
 
     public int count;
-    public Note[] data;
+    public NoteMetaData[] data;
     public Date time;
     public Mark mark;
 }

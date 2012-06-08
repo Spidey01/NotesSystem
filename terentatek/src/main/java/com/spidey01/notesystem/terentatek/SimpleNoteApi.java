@@ -22,6 +22,8 @@ public interface SimpleNoteApi {
     public NoteIndex index(int length, Mark mark);
     public NoteIndex index(int length);
 
+    public Note note(NoteMetaData meta);
+    public Note note(String key);
 
     /** Convenience method to return a array of all Note's.
      *
@@ -31,6 +33,6 @@ public interface SimpleNoteApi {
      *
      * If your code just wants a lump sum list of notes, it will probably do fine.
      */
-    public Note[] list();
+    public NoteMetaData[] list();
 }
 
