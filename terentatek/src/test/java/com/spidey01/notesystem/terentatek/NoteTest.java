@@ -19,7 +19,8 @@ public final class NoteTest {
     @Test
     public void noteToJson() {
 
-        Note n = new Note("invalid");
+        // we need a Simplenote instance for the test to be possible
+        Note n = Simplenote.note("invalid");
         n.content = "this is a test";
         Assert.assertEquals(Note.toJson(n), sGsonOutputFornoteToJson);
     }

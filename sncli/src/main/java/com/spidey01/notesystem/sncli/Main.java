@@ -109,7 +109,7 @@ class Main {
     }
 
     static void list() {
-        Main.login("BigBoss1964@gmail.com");
+        Main.login(null);
         // for (Note n : mSimplenote.list()) {
         // Note[] nl = mSimplenote.list();
         NoteMetaData[] nl = mSimplenote.list();
@@ -122,7 +122,26 @@ class Main {
     static void read(String key) {
         assert key != null;
 
-        // Note n = new Note(key);
+        Main.login(null);
+
+        Note n = mSimplenote.note(key);
+        System.out.println("key:"+n.key);
+        System.out.println("sharekey:"+n.sharekey);
+        System.out.println("publishkey:"+n.publishkey);
+        System.out.println("deleted:"+n.deleted);
+        System.out.println("modified:"+n.modifydate+" created:"+n.createddate);
+        System.out.println("syncnum:"+n.syncnum+ "version:"+n.version+" minversion:"+n.minversion);
+        System.out.print("systemtags:[");
+        for (String t : n.systemtags) {
+            System.out.print("\""+t+"\", ");
+        }
+        System.out.println("]");
+        System.out.print("tags:[");
+        for (String t : n.tags) {
+            System.out.print("\""+t+"\", ");
+        }
+        System.out.println("]");
+        System.out.println("Content:"+n.content);
     }
 
     static void update(String key, String[] tags) {
@@ -213,14 +232,5 @@ class Main {
 
     /* place to put code crap for debugging */
     static void debug() {
-        Main.login("BigBoss1964@gmail.com");
-
-        // NoteMetaData[] nl = mSimplenote.list();
-        NoteMetaData[] nl = mSimplenote.index(5).data;
-
-        for (NoteMetaData n : nl) {
-            Note note = mSimplenote.note(n);
-            System.out.println(note.content.substring(0, 16));
-        }
     }
 }
